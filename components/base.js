@@ -45,10 +45,11 @@ class Base{
 		for(let i = 0;i < ip_range_array.length;i++){
 			let out_file = `/out_file_${i}.txt`;
 			let command = this.command.replace("${ip_range}",ip_range_array[i]).replace("${out_file}",out_file_path + out_file);
-			this.log.info(`exec ${command}`);
-
+			this.log.info(`${i}/${ip_range_array.length} exec ${command}`);
 			await exec(command);
 		}
+
+		this.log.info("done")
 
 		return true;
 
