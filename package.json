@@ -12,7 +12,9 @@
   "author": "liu.yiyi0219@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "async-child-process": "^1.1.1",
     "log": "^1.4.0",
-    "sleep-promise": "^8.0.1"
+    "sleep-promise": "^8.0.1",
+    "threadpool": "^0.9.5"
   }
 }
