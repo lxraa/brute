@@ -38,7 +38,7 @@ class Base{
 	async getAvailableIpArray(){
 		let ip_range_array = this.getIpRangeArray();
 		let all_req = ip_range_array.length;
-		let out_file_path = "../runtime"
+		let out_file_path = __dirname + "../runtime"
 
 		// let tp = new threadpool(5,{ errorHandler: err => { throw err } });
 
