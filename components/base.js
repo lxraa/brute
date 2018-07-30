@@ -5,7 +5,8 @@ const Log = require("log")
 const sleep = require("sleep-promise");
 
 // const threadpool = require("threadpool");
-const async_child_process = require("async-child-process");
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 class Base{
 	/*
@@ -33,12 +34,6 @@ class Base{
 
 		return results;
 	}
-	// https://www.npmjs.com/package/async-child-process
-	async runCommand(command){
-
-		await async_child_process.join(child_process.exec(command));
-	}
-
 
 	async getAvailableIpArray(){
 		let ip_range_array = this.getIpRangeArray();
@@ -52,26 +47,9 @@ class Base{
 			let command = this.command.replace("${ip_range}",ip_range_array[i]).replace("${out_file}",out_file_path + out_file);
 			this.log.info(`exec ${command}`);
 
-			await this.runCommand(command);
-			// tp.queue(async ()=>{
-			// 	await async_child_process.join(child_process.exec(command));
-			// });
-
-			// child_process.exec(command,(err,stdout,stderr)=>{
-			// 	all_req = all_req - 1;
-			// 	if(err){
-			// 		this.log.error(`执行命令 ${command} 时发生错误`);
-			// 		console.log(err);
-			// 		return false;
-			// 	}
-			// 	else{
-			// 		this.log.info(`${command} 完成`);
-			// 	}
-			// });
+			await exec(command);
 		}
 
-		// tp.run();
-		// tp.close();
 		return true;
 
 	}
